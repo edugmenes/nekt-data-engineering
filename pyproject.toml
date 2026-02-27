@@ -1,0 +1,15 @@
+[project]
+name = "nekt-notebooks"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9, <3.10"
+dependencies = [
+    "delta-spark==3.3.0",
+    "jupyter>=1.1.1",
+    "nekt-sdk",
+    "pyspark==3.5.5",
+]
+
+[tool.uv.sources]
+nekt-sdk = { git = "https://github.com/nektcom/nekt-sdk-py.git" }
