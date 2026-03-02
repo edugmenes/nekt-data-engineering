@@ -14,5 +14,5 @@ SELECT
     , COALESCE(DATETIME(TIMESTAMP_MILLIS(CAST(`at` AS INT64))), NULL)   AS interval_date_added_iso 
 FROM 
     stech_solucoes_tecnologicas_bronze.time_entries
-WHERE 
-    task.id = '86afp1jfh'
+-- WHERE 
+--     task.id = '86afp1jfh'
