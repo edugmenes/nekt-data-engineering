@@ -14,11 +14,11 @@ A solução original consistia em:
 
 ## ⚠️ Problemas Identificados
 A arquitetura anterior apresentava:
-❌ Código difícil de manter
-❌ Alta dependência de conhecimento técnico específico
-❌ Ausência de governança e rastreabilidade
-❌ Escalabilidade limitada
-❌ Dificuldade de adaptação a mudanças da API
+- ❌ Código difícil de manter
+- ❌ Alta dependência de conhecimento técnico específico
+- ❌ Ausência de governança e rastreabilidade
+- ❌ Escalabilidade limitada
+- ❌ Dificuldade de adaptação a mudanças da API
 
 ## 🧠 Objetivo da POC
 - Reestruturar a solução utilizando a plataforma Nekt, buscando:
@@ -86,6 +86,7 @@ Power BI
 - Google BigQuery
 - Power BI
 - GCP
+
 
 
 
