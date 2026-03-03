@@ -21,8 +21,8 @@ A arquitetura anterior apresentava:
 - ❌ Dificuldade de adaptação a mudanças da API
 
 ## 🧠 Objetivo da POC
-- Reestruturar a solução utilizando a plataforma Nekt, buscando:
-- Simplificação da engenharia de dados
+Reestruturar a solução utilizando a plataforma Nekt, buscando:
+- Simplificar a solução no geral (menos código)
 - Maior governança
 - Escalabilidade
 - Melhor manutenção
@@ -44,20 +44,20 @@ Power BI
 ```
 <img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
 
-### 🔌 Extração (Bronze)
+### 🥉 Extração (Bronze)
 - Utilização de source nativa REST da Nekt
 - Conexão autenticada com API do ClickUp
 - Carga raw estruturada
 - Execuções rastreáveis via plataforma
 
-### 🔄 Transformação (Silver)
+### 🥈 Transformação (Silver)
 - Notebook em PySpark 
 - Limpeza e padronização
 - Tratamento de campos aninhados
 - Tipagem adequada
 - Estruturação para consumo analítico
 
-### 📦 Carga Final (Gold)
+### 🥇 Carga Final (Gold)
 - Utilização de destination nativa da Nekt
 - Escrita automatizada no BigQuery
 - Dataset estruturado para BI
@@ -72,11 +72,11 @@ Power BI
 | Falhas difíceis de rastrear   | Observabilidade via plataforma  |
 
 ## 📈 Resultados Técnicos
-- Redução da complexidade operacional
-- Melhoria significativa na rastreabilidade
-- Facilidade de expansão para novos endpoints
-- Separação clara de responsabilidades (medalhão)
-- Redução do risco operacional
+- ✅ Redução da complexidade operacional
+- ✅ Melhoria significativa na rastreabilidade
+- ✅ Facilidade de expansão para novos endpoints
+- ✅ Separação clara de responsabilidades (medalhão)
+- ✅ Redução do risco operacional
 
 ## 🛠️ Stack Tecnológica
 - ClickUp (API)
@@ -86,6 +86,7 @@ Power BI
 - Google BigQuery
 - Power BI
 - GCP
+
 
 
 
