@@ -29,7 +29,6 @@ A arquitetura anterior apresentava:
 - Arquitetura organizada (medalhão)
 
 🏗️ Arquitetura da Nova Solução
-<img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
 ```
 ClickUp
    ↓
@@ -43,6 +42,7 @@ BigQuery (Gold - Base para BI)
    ↓
 Power BI
 ```
+<img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
 
 🔌 Extração (Bronze)
 - Utilização de source nativa REST da Nekt
@@ -86,3 +86,4 @@ Falhas difíceis de rastrear	| Observabilidade via plataforma
 - Google BigQuery
 - Power BI
 - GCP
+
