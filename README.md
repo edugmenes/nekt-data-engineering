@@ -63,13 +63,13 @@ Power BI
 - Dataset estruturado para BI
 
 ## 🔥 Vantagens da Nova Arquitetura
-**Antes**			            | **Depois**
-----------------------------------------------------------------
-Código 100% manual		      | Solução low-code
-Sem governança                | Execuções auditáveis
-Alta complexidade             | Manutenção simplificada
-Escalabilidade limitada		   | Escalabilidade nativa
-Falhas difíceis de rastrear   | Observabilidade via plataforma
+| **Antes**                     | **Depois**                      |
+|-------------------------------|---------------------------------|
+| Código 100% manual            | Solução low-code                |
+| Sem governança                | Execuções auditáveis            |
+| Alta complexidade             | Manutenção simplificada         |
+| Escalabilidade limitada       | Escalabilidade nativa           |
+| Falhas difíceis de rastrear   | Observabilidade via plataforma  |
 
 ## 📈 Resultados Técnicos
 - Redução da complexidade operacional
@@ -86,5 +86,6 @@ Falhas difíceis de rastrear   | Observabilidade via plataforma
 - Google BigQuery
 - Power BI
 - GCP
+
 
 
