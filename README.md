@@ -1,7 +1,7 @@
 # 🚀 POC  - ClickUp → BigQuery → Power BI Integration (Studio61)
 
 ## 📖 Context
-One of my customers meeded to:
+One of my customers needed to:
 - Extract data from ClickUp
 - Consolidate it into Google BigQuery
 - Build reports in Power BI
@@ -85,3 +85,4 @@ Power BI
 - GCP
 - Google BigQuery
 - Power BI
+
