@@ -1,94 +1,87 @@
-# 🚀 POC – Integração ClickUp → BigQuery → Power BI (Studio61)
+# 🚀 POC  - ClickUp → BigQuery → Power BI Integration (Studio61)
 
-## 📖 Contexto
-A Studio61 (agência de marketing) precisava:
-- Extrair dados do ClickUp
-- Consolidar em Google BigQuery
-- Construir relatórios no Power BI
+## 📖 Context
+One of my customers meeded to:
+- Extract data from ClickUp
+- Consolidate it into Google BigQuery
+- Build reports in Power BI
 
-A solução original consistia em:
-- Script Python customizado
-- Executado via job agendado na GCP
-- Extração direta via APIs
-- Carga manual no BigQuery
+The original solution consisted of:
+- A custom Python script
+- Executed via a scheduled job in GCP
+- Direct extraction through APIs
+- Manual load into BigQuery
 
-## ⚠️ Problemas Identificados
-A arquitetura anterior apresentava:
-- ❌ Código difícil de manter
-- ❌ Alta dependência de conhecimento técnico específico
-- ❌ Ausência de governança e rastreabilidade
-- ❌ Escalabilidade limitada
-- ❌ Dificuldade de adaptação a mudanças da API
+## ⚠️ Identified Problems
+The previous architecture presented:
+- ❌ Hart-to-maintain code
+- ❌ High dependency on specific technical knowledge
+- ❌ Lack of governance and traceability
+- ❌ Limited scalability
+- ❌ Difficulty adapting to API changes
 
-## 🧠 Objetivo da POC
-Reestruturar a solução utilizando a plataforma Nekt, buscando:
-- Simplificar a solução no geral (menos código)
-- Maior governança
-- Escalabilidade
-- Melhor manutenção
-- Arquitetura organizada (medalhão)
-
-## 🏗️ Arquitetura da Nova Solução
+## 🧠 Main Objetives
+Restructure the solution using the Nekt platform, aiming to:
+- Simplify the solution (less code)
+- Increase governance
+- Improve scalability
+- Improve maintainability
+- Implement an organized architecture (Medallion Architecture)
+  
+## 🏗️ New Architecture
 ```
 ClickUp
    ↓
-Nekt Source (Extraction)
+Nekt Source             (Extract to Bronze)
    ↓
-Nekt Notebook (Transform - PySpark)
+Nekt PySpark Notebook   (Transform to Silver)
    ↓
-Nekt Destination (Load)
+Nekt Destination        (Load to Gold)
    ↓
-BigQuery (Gold - Base para BI)
+BigQuery                (BI Data Source)
    ↓
 Power BI
 ```
 <img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
 
-### 🥉 Extração (Bronze)
-- Utilização de source nativa REST da Nekt
-- Conexão autenticada com API do ClickUp
-- Carga raw estruturada
-- Execuções rastreáveis via plataforma
+### 🥉 Extraction (Bronze)
+- Use of Nekt’s native REST source
+- Authenticated connection to the ClickUp API
+- Structured raw data ingestion
+- Executions traceable via the platform
 
-### 🥈 Transformação (Silver)
-- Notebook em PySpark 
-- Limpeza e padronização
-- Tratamento de campos aninhados
-- Tipagem adequada
-- Estruturação para consumo analítico
+### 🥈 Transformations (Silver)
+- PySpark notebook 
+- Data cleaning and standardization
+- Proper data typing
+- Structured for analytical consumption
 
-### 🥇 Carga Final (Gold)
-- Utilização de destination nativa da Nekt
-- Escrita automatizada no BigQuery
-- Dataset estruturado para BI
+### 🥇 Final Load (Gold)
+- Use of Nekt’s native destination
+- Automated write into BigQuery
+- BI-ready structured dataset
 
-## 🔥 Vantagens da Nova Arquitetura
-| **Antes**                     | **Depois**                      |
-|-------------------------------|---------------------------------|
-| Código 100% manual            | Solução low-code                |
-| Sem governança                | Execuções auditáveis            |
-| Alta complexidade             | Manutenção simplificada         |
-| Escalabilidade limitada       | Escalabilidade nativa           |
-| Falhas difíceis de rastrear   | Observabilidade via plataforma  |
+## 🔥 Before/After Comparison
+| **Before**             | **After**               |
+|------------------------|-------------------------|
+| 100% manual code       | Low-code solution       |
+| No governance          | Auditable executions    |
+| High complexity        | Simplified maintenance  |
+| Limited scalability    | Native scalability      |
+| No rastreability       | Platform observability  |
 
-## 📈 Resultados Técnicos
-- ✅ Redução da complexidade operacional
-- ✅ Melhoria significativa na rastreabilidade
-- ✅ Facilidade de expansão para novos endpoints
-- ✅ Separação clara de responsabilidades (medalhão)
-- ✅ Redução do risco operacional
+## 📈 Technical Results
+= ✅ Reduced operational complexity
+- ✅ Significant improvement in traceability
+- ✅ Easy expansion to new endpoints
+- ✅ Clear separation of responsibilities (Medallion Architecture)
+- ✅ Reduced operational ris
 
-## 🛠️ Stack Tecnológica
+## 🛠️ Technology Stack
 - ClickUp (API)
 - Nekt (Data Platform)
-- Docker (para os testes de transformação usando a SDK da Nekt)
+- Docker
 - PySpark
+- GCP
 - Google BigQuery
 - Power BI
-- GCP
-
-
-
-
-
-
