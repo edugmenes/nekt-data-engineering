@@ -71,7 +71,7 @@ Power BI
 | No rastreability       | Platform observability  |
 
 ## 📈 Technical Results
-= ✅ Reduced operational complexity
+- ✅ Reduced operational complexity
 - ✅ Significant improvement in traceability
 - ✅ Easy expansion to new endpoints
 - ✅ Clear separation of responsibilities (Medallion Architecture)
@@ -85,6 +85,7 @@ Power BI
 - GCP
 - Google BigQuery
 - Power BI
+
 
 
 
