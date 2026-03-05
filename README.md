@@ -73,10 +73,10 @@ Power BI
 
 ## 📈 Technical Results
 - ✅ Reduced operational complexity
+- ✅ Reduced operational risks
 - ✅ Significant improvement in traceability
 - ✅ Easy expansion to new endpoints
 - ✅ Clear separation of responsibilities (Medallion Architecture)
-- ✅ Reduced operational ris
 
 ## 🛠️ Technology Stack
 - ClickUp (API)
@@ -86,6 +86,7 @@ Power BI
 - GCP
 - Google BigQuery
 - Power BI
+
 
 
 
