@@ -42,6 +42,7 @@ BigQuery                (BI Data Source)
    ↓
 Power BI
 ```
+<img width="1470" height="856" alt="image" src="https://github.com/user-attachments/assets/b6dd9fe0-37dd-431e-a06f-21a2fe8d6aac" />
 <img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
 
 ### 🥉 Extraction (Bronze)
@@ -85,6 +86,7 @@ Power BI
 - GCP
 - Google BigQuery
 - Power BI
+
 
 
 
