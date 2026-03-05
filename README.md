@@ -7,9 +7,9 @@ One of my customers needed to:
 - Build reports in Power BI
 
 The original solution consisted of:
-- A custom Python script
+- A custom Python ETL API
 - Executed via a scheduled job in GCP
-- Direct extraction through APIs
+- Direct extraction through ClickUp endpoints
 - Manual load into BigQuery
 
 ## ⚠️ Identified Problems
@@ -86,6 +86,7 @@ Power BI
 - GCP
 - Google BigQuery
 - Power BI
+
 
 
 
