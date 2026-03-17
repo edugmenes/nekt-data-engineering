@@ -1,4 +1,4 @@
-# POC Conta Azul + ClickUp APIs -> BigQuery -> Power BI (Studio61)
+# Data Source APIs --> BigQuery --> Power BI using Nekt
 
 ## 📖 Context
 One of my customers needed to:
