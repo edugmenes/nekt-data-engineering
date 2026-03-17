@@ -2,14 +2,14 @@
 
 ## 📖 Context
 One of my customers needed to:
-- Extract data from ClickUp
+- Extract data from ClickUp and Conta Azul ERP
 - Consolidate it into Google BigQuery
 - Build reports in Power BI
 
 The original solution consisted of:
 - A custom Python ETL API
 - Executed via a scheduled job in GCP
-- Direct extraction through ClickUp endpoints
+- Direct extraction through APIs endpoints
 - Manual load into BigQuery
 
 ## ⚠️ Identified Problems
@@ -18,7 +18,7 @@ The previous architecture presented:
 - ❌ High dependency on specific technical knowledge
 - ❌ Lack of governance and traceability
 - ❌ Limited scalability
-- ❌ Difficulty adapting to API changes
+- ❌ Difficulty adapting to APIs changes
 
 ## 🧠 Main Objetives
 Restructure the solution using the Nekt platform, aiming to:
@@ -30,7 +30,8 @@ Restructure the solution using the Nekt platform, aiming to:
   
 ## 🏗️ New Architecture
 ```
-ClickUp
+ClickUp API
+Conta Azul API          (Sources)
    ↓
 Nekt Source             (Extract to Bronze)
    ↓
@@ -38,11 +39,11 @@ Nekt PySpark Notebook   (Transform to Silver)
    ↓
 Nekt Destination        (Load to Gold)
    ↓
-BigQuery                (BI Data Source)
+BigQuery                (Analytical Datasets)
    ↓
-Power BI
+Power BI                (BI layer)
 ```
-<img width="1470" height="856" alt="image" src="https://github.com/user-attachments/assets/b6dd9fe0-37dd-431e-a06f-21a2fe8d6aac" />
+<img width="3129" height="1112" alt="Untitled-2026-03-02-1640" src="https://github.com/user-attachments/assets/668f0dce-a15f-4c4a-8eb7-0e39963ea1f8" />
 <img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
 
 ### 🥉 Extraction (Bronze)
@@ -79,8 +80,9 @@ Power BI
 - ✅ Clear separation of responsibilities (Medallion Architecture)
 
 ## 🛠️ Technology Stack
-- ClickUp (API)
-- Nekt (Data Platform)
+- ClickUp (REST APIs)
+- Conta Azul (REST APIs)
+- Nekt (Data Engineering Platform)
 - Docker
 - PySpark
 - GCP
