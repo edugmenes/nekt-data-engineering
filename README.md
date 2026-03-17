@@ -1,4 +1,4 @@
-# POC ClickUp → BigQuery → Power BI Integration (Studio61)
+# POC Conta Azul + ClickUp APIs -> BigQuery -> Power BI (Studio61)
 
 ## 📖 Context
 One of my customers needed to:
