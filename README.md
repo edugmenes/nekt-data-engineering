@@ -44,7 +44,8 @@ BigQuery                (Analytical Datasets)
 Power BI                (BI layer)
 ```
 <img width="3129" height="1112" alt="Untitled-2026-03-02-1640" src="https://github.com/user-attachments/assets/668f0dce-a15f-4c4a-8eb7-0e39963ea1f8" />
-<img width="1514" height="741" alt="Captura de tela 2026-03-02 174037" src="https://github.com/user-attachments/assets/8d7b4d5a-eaeb-4199-bb23-68caff986738" />
+<img width="1915" height="864" alt="image" src="https://github.com/user-attachments/assets/0fa3b453-71c6-4673-933d-1fbba71b1010" />
+
 
 ### 🥉 Extraction (Bronze)
 - Use of Nekt’s native REST source
