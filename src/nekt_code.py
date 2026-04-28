@@ -34,25 +34,27 @@ df_bronze_clickup_spaces                = extract_nekt_table("Bronze", "studio61
 df_bronze_clickup_time_entries          = extract_nekt_table("Bronze", "studio61_clickup_bronze_time_entries")
 
 # conta azul - bronze tables
-df_bronze_contaazul_accounts_payable    = extract_nekt_table("Bronze", "studio61_contaazul_bronze_accounts_payable")
-df_bronze_contaazul_accounts_receivable = extract_nekt_table("Bronze", "studio61_contaazul_bronze_accounts_receivable")
-df_bronze_contaazul_categories          = extract_nekt_table("Bronze", "studio61_contaazul_bronze_categories")
-df_bronze_contaazul_financial_accounts  = extract_nekt_table("Bronze", "studio61_contaazul_bronze_financial_accounts")
-df_bronze_contaazul_installments        = extract_nekt_table("Bronze", "studio61_contaazul_bronze_installments")
-df_bronze_contaazul_sales_list          = extract_nekt_table("Bronze", "studio61_contaazul_bronze_sales_list")
-df_bronze_contaazul_sales_details       = extract_nekt_table("Bronze", "studio61_contaazul_bronze_sales_details")
+df_bronze_contaazul_accounts_payable    = extract_nekt_table("Bronze", "studio61_contaazul_bronze_despesas")
+df_bronze_contaazul_accounts_receivable = extract_nekt_table("Bronze", "studio61_contaazul_bronze_receitas")
+df_bronze_contaazul_categories          = extract_nekt_table("Bronze", "studio61_contaazul_bronze_categorias")
+df_bronze_contaazul_dre_categories      = extract_nekt_table("Bronze", "studio61_contaazul_bronze_categorias_dre")
+df_bronze_contaazul_financial_accounts  = extract_nekt_table("Bronze", "studio61_contaazul_bronze_contas_financeiras")
+df_bronze_contaazul_installments        = extract_nekt_table("Bronze", "studio61_contaazul_bronze_parcelas")
+df_bronze_contaazul_sales_list          = extract_nekt_table("Bronze", "studio61_contaazul_bronze_vendas_lista")
+df_bronze_contaazul_sales_details       = extract_nekt_table("Bronze", "studio61_contaazul_bronze_vendas_detalhes")
 
 ## TRANSFORMING TABLES
 # clickup - users
 df_silver_clickup_users = (
     df_bronze_clickup_users
+    .filter(
+        F.col("username").isNotNull()
+    )
     .select(
         F.col("id")         .cast("integer").alias("user_id"),
-        F.col("username")   .cast("string").alias("user_name")
+        F.col("username")   .cast("string") .alias("user_name")
     )
-    .filter(
-        F.col("user_name").isNotNull()
-    )
+    
     .dropDuplicates(
         ["user_id"]
     )
@@ -61,12 +63,12 @@ df_silver_clickup_users = (
 # clickup - spaces
 df_silver_clickup_spaces = (
     df_bronze_clickup_spaces
-    .select(
-        F.col("id")     .cast("long").alias("space_id"),
-        F.col("name")   .cast("string").alias("space_name")
-    )
     .filter(
-        F.col("space_name").isNotNull()
+        F.col("name").isNotNull()
+    )
+    .select(
+        F.col("id")     .cast("long")   .alias("space_id"),
+        F.col("name")   .cast("string") .alias("space_name")
     )
     .dropDuplicates(
         ["space_id"]
@@ -76,26 +78,26 @@ df_silver_clickup_spaces = (
 # clickup - time entries
 df_silver_clickup_time_entries = (
     df_bronze_clickup_time_entries
+    .filter(
+        F.col("id").isNotNull() &
+        F.col("user.id").isNotNull() &
+        F.col("start").isNotNull() &
+        F.col("end").isNotNull() &
+        (F.col("end") > F.col("start"))
+    )
     .select(
-        F.col("id")                     .cast("long").alias("interval_id"),
+        F.col("id")                     .cast("long")   .alias("interval_id"),
         F.col("wid")                    .cast("integer").alias("team_id"),
         F.col("user.id")                .cast("integer").alias("user_id"),
-        F.col("user.username")          .cast("string").alias("user_name"),
-        F.col("task_location.space_id") .cast("long").alias("space_id"),
-        F.col("task.id")                .cast("string").alias("task_id"),
-        F.col("start")                  .cast("long").alias("interval_date_start_ms"),
-        ms_to_timestamp("start")        .cast("string").alias("interval_date_start_iso"),
-        F.col("end")                    .cast("long").alias("interval_date_end_ms"),
-        ms_to_timestamp("end")          .cast("string").alias("interval_date_end_iso"),
-        F.col("at")                     .cast("long").alias("interval_date_added_ms"),
-        ms_to_timestamp("at")           .cast("string").alias("interval_date_added_iso"),
-    )
-    .filter(
-        F.col("interval_id").isNotNull() &
-        F.col("user_id").isNotNull() &
-        F.col("interval_date_start_ms").isNotNull() &
-        F.col("interval_date_end_ms").isNotNull() &
-        (F.col("interval_date_end_ms").cast("long") > F.col("interval_date_start_ms").cast("long"))
+        F.col("user.username")          .cast("string") .alias("user_name"),
+        F.col("task_location.space_id") .cast("long")   .alias("space_id"),
+        F.col("task.id")                .cast("string") .alias("task_id"),
+        F.col("start")                  .cast("long")   .alias("interval_date_start_ms"),
+        ms_to_timestamp("start")        .cast("string") .alias("interval_date_start_iso"),
+        F.col("end")                    .cast("long")   .alias("interval_date_end_ms"),
+        ms_to_timestamp("end")          .cast("string") .alias("interval_date_end_iso"),
+        F.col("at")                     .cast("long")   .alias("interval_date_added_ms"),
+        ms_to_timestamp("at")           .cast("string") .alias("interval_date_added_iso"),
     )
     .dropDuplicates(
         ["interval_id"]
@@ -113,20 +115,20 @@ df_silver_contaazul_accounts_payable = (
         "categoria", F.explode("categorias")
     )
     .select(
-        F.col("id")                 .cast("string").alias("id"),
-        F.col("descricao")          .cast("string").alias("descricao"),
-        F.col("data_vencimento")    .cast("string").alias("data_vencimento"),
-        F.col("status")             .cast("string").alias("status"),
-        F.col("total")              .cast("float") .alias("total"),
-        F.col("nao_pago")           .cast("float") .alias("nao_pago"),
-        F.col("pago")               .cast("float") .alias("pago"),
-        F.col("data_criacao")       .cast("string").alias("data_criacao"),
-        F.col("data_alteracao")     .cast("string").alias("data_alteracao"),
-        F.col("categoria.id")       .cast("string").alias("categoria_principal_id"),
-        F.col("categoria.nome")     .cast("string").alias("categoria_principal_nome"),
-        F.col("fornecedor.id")      .cast("string").alias("fornecedor_id"),
-        F.col("fornecedor.nome")    .cast("string").alias("fornecedor_nome"),
-        F.current_timestamp()       .cast("string").alias("_loaded_at"),
+        F.col("id")             .cast("string") .alias("id"),
+        F.col("descricao")      .cast("string") .alias("descricao"),
+        F.col("data_vencimento").cast("string") .alias("data_vencimento"),
+        F.col("status")         .cast("string") .alias("status"),
+        F.col("total")          .cast("float")  .alias("total"),
+        F.col("nao_pago")       .cast("float")  .alias("nao_pago"),
+        F.col("pago")           .cast("float")  .alias("pago"),
+        F.col("data_criacao")   .cast("string") .alias("data_criacao"),
+        F.col("data_alteracao") .cast("string") .alias("data_alteracao"),
+        F.col("categoria.id")   .cast("string") .alias("categoria_principal_id"),
+        F.col("categoria.nome") .cast("string") .alias("categoria_principal_nome"),
+        F.col("fornecedor.id")  .cast("string") .alias("fornecedor_id"),
+        F.col("fornecedor.nome").cast("string") .alias("fornecedor_nome"),
+        F.current_timestamp()   .cast("string") .alias("_loaded_at"),
     )
     .dropDuplicates(
         ["id"]
@@ -144,20 +146,20 @@ df_silver_contaazul_accounts_receivable = (
         "categoria", F.explode("categorias")
     )
     .select(
-        F.col("id")                 .cast("string").alias("id"),
-        F.col("descricao")          .cast("string").alias("descricao"),
-        F.col("data_vencimento")    .cast("string").alias("data_vencimento"),
-        F.col("status")             .cast("string").alias("status"),
-        F.col("total")              .cast("float") .alias("total"),
-        F.col("nao_pago")           .cast("float") .alias("nao_pago"),
-        F.col("pago")               .cast("float") .alias("pago"),
-        F.col("data_criacao")       .cast("string").alias("data_criacao"),
-        F.col("data_alteracao")     .cast("string").alias("data_alteracao"),
-        F.col("categoria.id")       .cast("string").alias("categoria_principal_id"),
-        F.col("categoria.nome")     .cast("string").alias("categoria_principal_nome"),
-        F.col("cliente.id")         .cast("string").alias("cliente_id"),
-        F.col("cliente.nome")       .cast("string").alias("cliente_nome"),
-        F.current_timestamp()       .cast("string").alias("_loaded_at"),
+        F.col("id")             .cast("string") .alias("id"),
+        F.col("descricao")      .cast("string") .alias("descricao"),
+        F.col("data_vencimento").cast("string") .alias("data_vencimento"),
+        F.col("status")         .cast("string") .alias("status"),
+        F.col("total")          .cast("float")  .alias("total"),
+        F.col("nao_pago")       .cast("float")  .alias("nao_pago"),
+        F.col("pago")           .cast("float")  .alias("pago"),
+        F.col("data_criacao")   .cast("string") .alias("data_criacao"),
+        F.col("data_alteracao") .cast("string") .alias("data_alteracao"),
+        F.col("categoria.id")   .cast("string") .alias("categoria_principal_id"),
+        F.col("categoria.nome") .cast("string") .alias("categoria_principal_nome"),
+        F.col("cliente.id")     .cast("string") .alias("cliente_id"),
+        F.col("cliente.nome")   .cast("string") .alias("cliente_nome"),
+        F.current_timestamp()   .cast("string") .alias("_loaded_at"),
     )
     .dropDuplicates(
         ["id"]
@@ -168,21 +170,21 @@ df_silver_contaazul_accounts_receivable = (
 df_silver_contaazul_categories = (
     df_bronze_contaazul_categories
     .select(
-        F.col("id")                     .cast("string") .alias("id"),
-        F.col("nome")                   .cast("string") .alias("nome"),
-        F.col("versao")                 .cast("integer").alias("versao"),
-        F.col("categoria_pai")          .cast("string") .alias("categoria_pai"),
-        F.col("tipo")                   .cast("string") .alias("tipo"),
-        F.col("entrada_dre")            .cast("string") .alias("entrada_dre"),
-        F.col("considera_custo_dre")    .cast("boolean").alias("considera_custo_dre"),
-        F.current_timestamp()           .cast("string").alias("_loaded_at"),
+        F.col("id")                 .cast("string") .alias("id"),
+        F.col("nome")               .cast("string") .alias("nome"),
+        F.col("versao")             .cast("integer").alias("versao"),
+        F.col("categoria_pai")      .cast("string") .alias("categoria_pai"),
+        F.col("tipo")               .cast("string") .alias("tipo"),
+        F.col("entrada_dre")        .cast("string") .alias("entrada_dre"),
+        F.col("considera_custo_dre").cast("boolean").alias("considera_custo_dre"),
+        F.current_timestamp()       .cast("string") .alias("_loaded_at"),
     )
     .dropDuplicates(
         ["id"]
     )
 )
 
-# conta azul - customers
+# conta azul - customers - to review
 df_silver_contaazul_customers = (
     df_bronze_contaazul_sales_details.alias("sd")
     .join(
@@ -191,17 +193,18 @@ df_silver_contaazul_customers = (
         how="inner",
     )
     .select(
-        F.col("sd.cliente.uuid")        .alias("id"),
-        F.col("sd.cliente.nome")        .alias("name"),
-        F.col("sd.cliente.tipo_pessoa") .alias("person_type"),
-        F.col("sl.cliente.email")       .alias("email"),
-        F.col("sl.cliente.telefone")    .alias("phone"),
-        F.col("sd.cliente.documento")   .alias("document"),
-        F.col("sl.cliente.cep")         .alias("zip_code"),
-        F.col("sl.cliente.cidade")      .alias("city"),
-        F.col("sl.cliente.estado")      .alias("state"),
-        F.col("sl.cliente.endereco")    .alias("address"),
-        F.col("sl.cliente.pais")        .alias("country"),
+        F.col("sd.cliente.uuid")                        .alias("id"),
+        F.col("sd.cliente.nome")                        .alias("name"),
+        F.col("sd.cliente.tipo_pessoa")                 .alias("person_type"),
+        F.col("sl.cliente.email")                       .alias("email"),
+        F.col("sl.cliente.telefone")                    .alias("phone"),
+        F.col("sd.cliente.documento")                   .alias("document"),
+        F.col("sl.cliente.cep")                         .alias("zip_code"),
+        F.col("sl.cliente.cidade")                      .alias("city"),
+        F.col("sl.cliente.estado")                      .alias("state"),
+        F.col("sl.cliente.endereco")                    .alias("address"),
+        F.col("sl.cliente.pais")                        .alias("country"),
+        F.current_timestamp()           .cast("string") .alias("_loaded_at"),
     )
     .dropDuplicates(
         ["id"]
@@ -229,18 +232,19 @@ df_parent_categories = (
 df_silver_contaazul_combined_accounts = (
     df_silver_contaazul_accounts_payable
     .withColumn(
-        "tipo", F.lit("D").cast("string")
+        "tipo"      , F.lit("D")    .cast("string")
     )
     .unionByName(
         df_silver_contaazul_accounts_receivable
         .withColumn(
-            "tipo", F.lit("R").cast("string")
+            "tipo"  , F.lit("R")    .cast("string")
         ),
         allowMissingColumns=True,
     )
     .join(
         # first join — resolve categoria_pai_id from child category
-        df_silver_contaazul_categories.select(
+        df_silver_contaazul_categories
+        .select(
             F.col("id")             .cast("string").alias("categoria_principal_id"),
             F.col("categoria_pai")  .cast("string").alias("categoria_pai_id"),
         ),
@@ -249,26 +253,95 @@ df_silver_contaazul_combined_accounts = (
     )
     .join(
         # second join — resolve categoria_pai_nome from parent category
-        df_parent_categories.select(
-            F.col("categoria_pai_id")   .cast("string").alias("categoria_pai_id"),
-            F.col("categoria_pai_nome") .cast("string").alias("categoria_pai_nome"),
+        df_parent_categories
+        .select(
+            F.col("id")             .cast("string").alias("categoria_pai_id"),
+            F.col("nome")           .cast("string").alias("categoria_pai_nome"),
         ),
         on="categoria_pai_id",
         how="left",
     )
 )
 
-# conta azul - dre_financial_categories - to develop
-    
-# conta azul - dre_items                - to develop
+# conta azul - dre_items - to develop
+df_silver_contaazul_dre_items = (
+    df_bronze_contaazul_dre_categories
+    .filter(
+        F.col("id").isNotNull()
+    )
+    .select(                      
+        F.col("id")                                                         .cast("string") .alias("id"),
+        F.col("descricao")                                                  .cast("string") .alias("descricao"),
+        F.col("codigo")                                                     .cast("string") .alias("codigo"),
+        F.col("posicao")                                                    .cast("integer").alias("posicao"),
+        F.col("indica_totalizador")                                         .cast("boolean").alias("indica_totalizador"),
+        F.col("representa_soma_custo_medio")                                .cast("boolean").alias("representa_soma_custo_medio"), 
+        F.when(F.size("subitens")               > 0, True).otherwise(False) .cast("boolean").alias("tem_subitens"),
+        F.when(F.size("categorias_financeiras") > 0, True).otherwise(False) .cast("boolean").alias("tem_categorias_financeiras"),
+        F.current_timestamp()                                                               .alias("_loaded_at"),
+    )
+    .dropDuplicates(
+        ["id"]
+    )
+)
 
-# conta azul - dre_subitems             - to develop
+# conta azul - dre_subitems
+df_silver_contaazul_dre_subitems = (
+    df_bronze_contaazul_dre_categories
+    .filter(
+        F.col("subitens").isNotNull() &
+        (F.size("subitens") > 0)
+    )
+    .select(
+        F.col("id"),                                 
+        F.explode("subitens").alias("subitem")
+    )
+    .select(                      
+        F.col("subitem.id")                                                         .cast("string") .alias("id"),
+        F.col("subitem.descricao")                                                  .cast("string") .alias("descricao"),
+        F.col("subitem.codigo")                                                     .cast("string") .alias("codigo"),
+        F.col("subitem.posicao")                                                    .cast("integer").alias("posicao"),
+        F.col("subitem.indica_totalizador")                                         .cast("boolean").alias("indica_totalizador"),
+        F.col("subitem.representa_soma_custo_medio")                                .cast("boolean").alias("representa_soma_custo_medio"),
+        F.col("id")                                                                 .cast("string") .alias("parent_item_id"),   
+        F.when(F.size("subitem.categorias_financeiras") > 0, True).otherwise(False) .cast("boolean").alias("tem_categorias_financeiras"),
+        F.current_timestamp()                                                                       .alias("_loaded_at"),
+    )
+    .dropDuplicates(
+        ["id"]
+    )
+)
+
+# conta azul - dre_financial_categories - to develop
+df_silver_contaazul_dre_financial_categories = (
+    df_silver_contaazul_dre_items
+    .select(
+        F.col("id"),
+        F.col("descricao"),
+        F.col("codigo"),
+        F.col("posicao"),
+        F.col("indica_totalizador"),
+        F.col("representa_soma_custo_medio"),
+    )
+    .unionByName(
+        df_silver_contaazul_dre_subitems
+        .select(
+            F.col("id"),
+            F.col("descricao"),     
+            F.col("codigo"),
+            F.col("posicao"),
+            F.col("indica_totalizador"),
+            F.col("representa_soma_custo_medio"),
+        ),
+        allowMissingColumns=False
+    )
+)
 
 # conta azul - financial_accounts
 df_silver_contaazul_financial_accounts = (
     df_bronze_contaazul_financial_accounts
     .filter(
-        F.col("conta_financeira.id").isNotNull()
+        F.col("id").isNotNull()
     )
     .select(
         F.col("id")                             .cast("string") .alias("id"),
@@ -281,6 +354,7 @@ df_silver_contaazul_financial_accounts = (
         F.col("possui_config_boleto_bancario")  .cast("boolean").alias("possui_config_boleto_bancario"),
         F.col("agencia")                        .cast("string") .alias("agencia"),
         F.col("numero")                         .cast("string") .alias("numero"),
+        F.current_timestamp()                                   .alias("_loaded_at"),
     )
     .dropDuplicates(
         ["id"]
@@ -291,12 +365,17 @@ df_silver_contaazul_financial_accounts = (
 df_silver_contaazul_installments = (
     df_bronze_contaazul_installments
     .select(
-        F.col("id")                        .alias("parcela_id"),
-        F.col("status")                    .alias("parcela_status"),
-        F.col("evento.condicao_pagamento") .alias("condicao_pagamento"),
+        F.col("id")                         .alias("parcela_id"),
+        F.col("status")                     .alias("parcela_status"),
+        F.col("evento.condicao_pagamento")  .alias("condicao_pagamento"),
         F.col("referencia"),
-        F.col("evento.agendado")           .alias("agendado"),
-        F.col("evento.tipo")               .alias("tipo_evento"),
+        F.col("evento.agendado")            .alias("agendado"),
+        F.col("evento.tipo")                .alias("tipo_evento"),
+        # total_recebido
+        # total_a_receber
+        # total_pago
+        # total_a_pagar
+        # saldo_atual
         F.current_timestamp()              .alias("_loaded_at"),
     )
     .dropDuplicates(
