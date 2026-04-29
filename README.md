@@ -1,4 +1,4 @@
-# Data Source APIs --> BigQuery --> Power BI Integration using Nekt
+## Data Source APIs -> BigQuery -> Power BI Integration using Nekt
 
 ## 📖 Context
 One of my customers needed to:
