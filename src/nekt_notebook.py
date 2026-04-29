@@ -27,6 +27,15 @@ def ms_to_timestamp(col_name: str) -> Column:
     """Converts a Unix millisecond epoch column to a TimestampType."""
     return F.to_timestamp(F.col(col_name).cast("long") / 1000)
 
+def last_element(array_col: str, field: str) -> F.Column:
+    """Safely retrieves a field from the last element of an array column."""
+    return (
+        F.when(
+            F.size(F.col(array_col)) > 0,
+            F.element_at(F.col(array_col), F.size(F.col(array_col)))[field]
+        ).otherwise(F.lit(None))
+    )
+
 ## EXTRACTING TABLES
 # clickup - bronze tables
 df_bronze_clickup_users                 = extract_nekt_table("Bronze", "studio61_clickup_bronze_users")
@@ -480,15 +489,19 @@ df_silver_contaazul_installment_payments = (
 
 ## LOADING TABLES
 # clickup - silver tables
-save_nekt_table(df_silver_clickup_users,                    "Silver", "studio61_clickup_silver_users",                  folder_name="studio61_clickup_silver")
-save_nekt_table(df_silver_clickup_spaces,                   "Silver", "studio61_clickup_silver_spaces",                 folder_name="studio61_clickup_silver")
-save_nekt_table(df_silver_clickup_time_entries,             "Silver", "studio61_clickup_silver_time_entries",           folder_name="studio61_clickup_silver")
+save_nekt_table(df_silver_clickup_users,                        "Silver", "studio61_clickup_silver_users",                      "studio61_clickup_silver")
+save_nekt_table(df_silver_clickup_spaces,                       "Silver", "studio61_clickup_silver_spaces",                     "studio61_clickup_silver")
+save_nekt_table(df_silver_clickup_time_entries,                 "Silver", "studio61_clickup_silver_time_entries",               "studio61_clickup_silver")
 
 # conta azul - silver tables
-save_nekt_table(df_silver_contaazul_accounts_payable,       "Silver", "studio61_contaazul_silver_accounts_payable",     folder_name="studio61_contaazul_silver")
-save_nekt_table(df_silver_contaazul_accounts_receivable,    "Silver", "studio61_contaazul_silver_accounts_receivable",  folder_name="studio61_contaazul_silver")
-save_nekt_table(df_silver_contaazul_categories,             "Silver", "studio61_contaazul_silver_categories",           folder_name="studio61_contaazul_silver")
-save_nekt_table(df_silver_contaazul_customers,              "Silver", "studio61_contaazul_silver_customers",            folder_name="studio61_contaazul_silver")
-save_nekt_table(df_silver_contaazul_combined_accounts,      "Silver", "studio61_contaazul_silver_combined_accounts",    folder_name="studio61_contaazul_silver")
-save_nekt_table(df_silver_contaazul_financial_accounts,     "Silver", "studio61_contaazul_silver_financial_accounts",   folder_name="studio61_contaazul_silver")
-save_nekt_table(df_silver_contaazul_installments,           "Silver", "studio61_contaazul_silver_installments",         folder_name="studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_accounts_payable,           "Silver", "studio61_contaazul_silver_accounts_payable",         "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_accounts_receivable,        "Silver", "studio61_contaazul_silver_accounts_receivable",      "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_categories,                 "Silver", "studio61_contaazul_silver_categories",               "studio61_contaazul_silver")
+# save_nekt_table(df_silver_contaazul_customers,                  "Silver", "studio61_contaazul_silver_customers",                "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_combined_accounts,          "Silver", "studio61_contaazul_silver_combined_accounts",        "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_dre_items,                  "Silver", "studio61_contaazul_silver_dre_items",                "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_dre_subitems,               "Silver", "studio61_contaazul_silver_dre_subitems",             "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_dre_financial_categories,   "Silver", "studio61_contaazul_silver_dre_financial_categories", "studio61_contaazul_silver")
+# save_nekt_table(df_silver_contaazul_financial_accounts,         "Silver", "studio61_contaazul_silver_financial_accounts",       "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_installments,               "Silver", "studio61_contaazul_silver_installments",             "studio61_contaazul_silver")
+save_nekt_table(df_silver_contaazul_installment_payments,       "Silver", "studio61_contaazul_silver_installment_payments",     "studio61_contaazul_silver")
