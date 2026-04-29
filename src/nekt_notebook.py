@@ -353,6 +353,70 @@ df_silver_contaazul_dre_financial_categories = (
     )
 )
 
+# conta azul - financial accounts aggregations
+df_financial_accounts_agg = (
+    df_silver_contaazul_installments
+    .groupBy("id_conta_financeira")
+    .agg(
+        F.sum(F.when(F.col("tipo_evento") == "RECEITA", F.col("valor_pago")).otherwise(0)).cast("float").alias("total_recebido"),
+        F.sum(F.when(F.col("tipo_evento") == "RECEITA", F.col("nao_pago"))  .otherwise(0)).cast("float").alias("total_a_receber"),
+        F.sum(F.when(F.col("tipo_evento") == "DESPESA", F.col("valor_pago")).otherwise(0)).cast("float").alias("total_pago"),
+        F.sum(F.when(F.col("tipo_evento") == "DESPESA", F.col("nao_pago"))  .otherwise(0)).cast("float").alias("total_a_pagar"),
+    )
+    .withColumn(
+        "saldo_atual",
+        (F.col("total_recebido") - F.col("total_pago")).cast("float")
+    )
+)
+
+# conta azul - financial Accounts
+df_silver_contaazul_financial_accounts = (
+    df_bronze_contaazul_financial_accounts
+    .filter(
+        F.col("id").isNotNull()
+        & (F.col("ativo") == True)
+    )
+    .select(
+        F.col("id")                             .cast("string") .alias("id"),
+        F.col("banco")                          .cast("string") .alias("banco"),
+        F.col("codigo_banco")                   .cast("integer").alias("codigo_banco"),
+        F.col("nome")                           .cast("string") .alias("nome"),
+        F.col("ativo")                          .cast("boolean").alias("ativo"),
+        F.col("tipo")                           .cast("string") .alias("tipo"),
+        F.col("conta_padrao")                   .cast("boolean").alias("conta_padrao"),
+        F.col("possui_config_boleto_bancario")  .cast("boolean").alias("possui_config_boleto_bancario"),
+        F.col("agencia")                        .cast("string") .alias("agencia"),
+        F.col("numero")                         .cast("string") .alias("numero"),
+        F.current_timestamp()                   .cast("string") .alias("_loaded_at"),
+    )
+    .join(
+        df_financial_accounts_agg,
+        on=F.col("id") == F.col("id_conta_financeira"),
+        how="left",
+    )
+    .select(
+        F.col("id"),
+        F.col("banco"),
+        F.col("codigo_banco"),
+        F.col("nome"),
+        F.col("ativo"),
+        F.col("tipo"),
+        F.col("conta_padrao"),
+        F.col("possui_config_boleto_bancario"),
+        F.col("agencia"),
+        F.col("numero"),
+        F.coalesce(F.col("total_recebido"),     F.lit(0.0)).cast("float").alias("total_recebido"),
+        F.coalesce(F.col("total_a_receber"),    F.lit(0.0)).cast("float").alias("total_a_receber"),
+        F.coalesce(F.col("total_pago"),         F.lit(0.0)).cast("float").alias("total_pago"),
+        F.coalesce(F.col("total_a_pagar"),      F.lit(0.0)).cast("float").alias("total_a_pagar"),
+        F.coalesce(F.col("saldo_atual"),        F.lit(0.0)).cast("float").alias("saldo_atual"),
+        F.col("_loaded_at"),
+    )
+    .dropDuplicates(
+        ["id"]
+    )
+)
+
 # conta azul - installments
 df_silver_contaazul_installments = (
     df_bronze_contaazul_installments
@@ -437,6 +501,41 @@ df_silver_contaazul_installment_payments = (
     )
     .dropDuplicates(
         ["baixa_id"]
+    )
+)
+
+# df_silver_contaazul_people
+df_silver_contaazul_people = (
+    df_bronze_contaazul_people_list
+    .filter(
+        F.col("uuid").isNotNull()
+    )
+    .select(
+        F.col("uuid")                   .cast("string") .alias("id"),
+        F.col("id_legado")              .cast("integer").alias("id_legado"),
+        F.col("uuid_legado")            .cast("string") .alias("uuid_legado"),
+        F.col("nome")                   .cast("string") .alias("nome"),
+        F.col("documento")              .cast("string") .alias("documento"),
+        F.col("email")                  .cast("string") .alias("email"),
+        F.col("telefone")               .cast("string") .alias("telefone"),
+        F.col("ativo")                  .cast("boolean").alias("ativo"),
+        F.col("data_criacao")           .cast("string") .alias("data_criacao"),
+        F.col("data_alteracao")         .cast("string") .alias("data_alteracao"),
+        F.col("tipo_pessoa")            .cast("string") .alias("tipo_pessoa"),
+        F.col("observacoes_gerais")     .cast("string") .alias("observacoes_gerais"),
+        F.col("perfis")                 .cast("string") .alias("perfis"),
+        F.col("endereco.logradouro")    .cast("string") .alias("endereco_logradouro"),
+        F.col("endereco.numero")        .cast("string") .alias("endereco_numero"),
+        F.col("endereco.complemento")   .cast("string") .alias("endereco_complemento"),
+        F.col("endereco.bairro")        .cast("string") .alias("endereco_bairro"),
+        F.col("endereco.cidade")        .cast("string") .alias("endereco_cidade"),
+        F.col("endereco.estado")        .cast("string") .alias("endereco_uf"),
+        F.col("endereco.pais")          .cast("string") .alias("endereco_pais"),
+        F.col("endereco.cep")           .cast("string") .alias("endereco_cep"),
+        F.current_timestamp()           .cast("string") .alias("_loaded_at"),
+    )
+    .dropDuplicates(
+        ["id"]
     )
 )
 
